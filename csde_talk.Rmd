@@ -1,0 +1,521 @@
+---
+title: 'Race, Class, and Transit Oriented Development'
+subtitle: "*Examining high-income demographic change after light rail transit*"
+author: "Thelonious Goerz"
+institute: "Dept. of Sociology  \n  Johns Hopkins University"
+output: 
+  beamer_presentation:
+    colortheme: "seahorse"
+    keep_tex: true
+  latex_engine: pdflatex
+  slide_level: 3
+  classoption: "aspectratio=1610"
+fontsize: 11pt
+---
+
+
+```{r, include = F }
+# preliminaries
+library(readr)
+panel <- read_csv("./data/panel_data_42821.csv") # most recent data
+panel_full <- read_csv("./data/panel_data_thesis_final.csv")
+library(tidyverse)
+library(jtools)
+options(digits=2)
+```
+
+# Outline 
+
++ Background and prior research
++ Seattle case study
++ Methods and data
++ Descriptive and statistical results
++ Conclusion 
+
+# Motivation
+
++ How and where people move have been a core questions in urban sociology and poverty research for years.
+  + These moves have consequences for various aspects of life: wellbeing, economic status. 
+  
+**Therefore, it makes sense to study the most vulnerable populations, right?**
+
+# Motivation 
+
+**Well, sort of.**
+
++ I argue an asymmetric focus on studying the movement patterns of low-income residents in changing neighborhoods has left open theoretical and empirical gaps for researchers. 
+
+# Background: Theory 
+
++ Social scientists are interested in the effects of gentrification on urban demographic patterns.
+  + In recent years, it has been linked to major urban re-investment projects, such as Light Rail Transit.
+  + So, transit is a good proxy for gentrification, neighborhood change, and associated ideas.
+  
+**Why does studying transit matter?**
+
+# Background: Theory
+
+**Seattle and many other cities are increasingly turning to Light Rail Transit (LRT) as a way to manage growth, promote green travel initiatives, and reduce congestion.**
+
+  + Manage the tech boom in WA.
+  + Significant in-migration.
+  + Population growth.
+  
+# The Present Study
+
+**In Seattle:**
+
++ The Link Light Rail has been in development since 1996 when it was approved. 
+  + Construction began in 2003 and a majority of stations opened in 2009.
+  + As of 2021 there are 14 stations. 
+  + There are currently north and south expansions in development to 2036. 
+
+**As a consequence:**
+
++ There are puzzling trends going on.
+  + Hess (2020) finds dramatic increases in non-Hispanic White residents after LRT in Seattle.
+  + Declines in Asian and Hispanic residents after LRT.
+  
+**How is this happening?**
+  
+# Background: Income and mobility
+
+**Conventional wisdom suggests that neighborhoods change through low-income displacement.**
+
+  + But, low-income residents are often much less mobile than middle-income and higher-income residents (Freeman 2005).
+
++ However, there is evidence to suggest that middle and upper income residents are far more mobile:
+  + Ding et al. (2016): Increases in high credit score individuals' mobility in gentrified neighborhoods.
+  + Bartholemew and Ewing (2017): Disamenity effect in neighborhoods with urban development, homeowners moving out. 
+  + Martin and Beck (2011): Higher status non-homeowners may be moving out of gentrified neighborhoods.
+
+
+```{r,include = F, fig.align='center',echo = F, warning=F,message = F, fig.cap="Comparison of mean racial group population size over time in Seattle census tracts",fig.subcap="Line is LRT opening",fig.height=2.5,fig.width=4}
+# counts of each group over time 
+ panel_full %>% 
+   # pivot
+  mutate(treat = ifelse(lrt_treat == 1,"Light Rail Transit","Non-Light Rail")) %>% 
+   pivot_longer(c(total_nhwht,total_blk,total_as,total_hsp),
+                names_to = "group",values_to = "values") %>% 
+   ggplot(aes(time,values, color = group,group = group)) + 
+  #geom_line(aes(group = GEOID)) +
+  #stat_summary(geom = "line") + 
+  theme_minimal() + 
+   scale_color_manual(name = "Control",
+                   labels = c("Asian","Black",
+                                "Hispanic", "White"),
+                     values = c("#A8C9D7","#EA7C4D","#247E8C","#838C24")) + 
+ geom_smooth(method = "lm") + 
+ # geom_jitter()
+   labs(title = " ",
+        x = "Time",
+        y = "Mean Total Population") + 
+  # facet_wrap(~treat) + 
+  geom_vline(xintercept = 2010) + theme(text=element_text(size=10,  family="serif"))
+```
+
+# The Present Study
+
++ The demographic trends in Seattle are not consistent with patterns of socioeconomic mobility in changing neighborhoods.
+  + Often low-income groups are declining.
+  + But, statistically these groups are not as mobile.
+  
+**Where is this demographic change happening on average?**
+    
+# Hypothesis 
+
++ **This study argues that middle and high income groups are the primary forces shifting neighborhood racial composition in LRT neighborhoods because of their capacity to move.**
+
+# Methods 
+
++ Time series data for 135 census tracts (Seattle, N = 540) and 24 LRT treated tracts [1990-2015]:
+  + Income (by race), demographic variables, and controls. 
+  + American Community Survey, Decennial Census Long Form, Hess (2020). 
+
++ Difference in difference (comparative counterfactual design)
+  + Quasi-experiment where: 
+    + We can estimate causality.
+    + Gain insights about what would have happened if (+ LRT) or (-LRT).
+    
+# Descriptive Analysis
+
+```{r, echo = F, message =F, fig.align="center",warning=F, fig.cap = "Comparison of Percent of Each Racial Group Over Time in Seattle",fig.subcap="",fig.height=2,fig.width=4}
+# Racial composition descriptive graph 
+panel %>% 
+  # pivot comps into one 
+  pivot_longer(c(pct_wht,pct_blk,pct_a,pct_hsp),
+               names_to = "race", values_to = "race_pcts") %>% 
+  mutate(treat = ifelse(lrt_treat == 1,"LRT","Non-LRT")) %>%
+  # pipe to ggplot 
+  ggplot(aes(time,race_pcts,color = race)) + stat_summary(geom = "line") + 
+  # minimal 
+  theme_minimal() + 
+  # title 
+  scale_color_manual(name = "Racial Group",
+                     labels = c("% Asian","% Black",
+                                "% Hispanic", "% White"),
+                     values = c("#A8C9D7","#EA7C4D","#247E8C","#838C24")) + 
+  # labs
+  labs(title = " ",
+       subtitle = "Line is LRT opening",
+       x = "Time",
+       y = "% of Overall Composition") + 
+  facet_wrap(~treat) +
+  geom_vline(xintercept = 2010) + theme(text=element_text(size=8,  family="serif"))
+```
+
+# Descriptive Analysis 
+
+```{r, echo = F, message = F, fig.align = "center", warning = F,fig.width=7, fig.height=4, fig.cap = "Comparison of Income Quintiles in Seattle Census Tracts Over Time",fig.height=2,fig.width=4}
+# income comps 
+panel %>% 
+  # pivot 
+  pivot_longer(c(Q1pct,Q2pct,Q3pct,Q4pct,Q5pct),
+               names_to = "quintiles", values_to = "quintile_values") %>% 
+  mutate(treat = ifelse(lrt_treat == 1,"LRT","Non-LRT")) %>%
+  ggplot(aes(time,quintile_values,color = quintiles)) +
+  stat_summary(geom = "line") + 
+  scale_color_manual(name = "Income Quintile",
+                     values = c("#A8C9D7","#EA7C4D","#247E8C","#838C24","#8C2484"),
+                     labels = c("%Q1",
+                                "%Q2",
+                                "%Q3",
+                                "%Q4",
+                                "%Q5")) + 
+  theme_minimal() + 
+  labs(title = " ",
+       subtitle = "Line is LRT opening",
+       x = "Time",
+       y = "% Of Total") + facet_wrap(~treat) + 
+  geom_vline(xintercept = 2010) + theme(text=element_text(size=8,  family="serif"))
+```
+
+# Statistical Analysis: DID of racial composition
+
+```{r, echo = F, message = F, fig.align='center', fig.cap="Difference in Difference Estimates of Percent White Demographics in Seattle"}
+# FULL GLM PCT wht ----------------------------------------------------------
+pct_wht_full_glm <- glm(pct_wht ~ # outcome 
+                          I(time == 1990) + # Dummy for 1990
+                          I(time == 2010) + # dummy for 2010
+                          I(time == 2015) + # dummy for 2015
+                          I(lrt_treat == 1) + # treatement 
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010
+                          I(time == 2015 * lrt_treat) + # DID 2015 
+                          pct_wht80 + # fixed effect for 1980 racial composition for each race
+                          pct_blk80 + # fixed effect for blk 80 composition
+                          pct_hsp80 + # fixed effect for hispanic composition
+                          pct_as_pi80 + # fixed effect for asian pi composition
+                          vacant_hu80 + # 1980 fixed effect housing 
+                          med_gross_rent80 + # 1980 fixed effect for rent in dollars 
+                          pop_dens + # time varying population density
+                          maj_owner +  # time varying homeownership
+                          #I(lrt_treat == 1 * maj_owner) + 
+                          total_pop,
+                          data = panel) 
+
+
+# test
+# lrtest(pct_wht_full_glm,glm_pct_wht_total_pop)
+
+# compare 
+#export_summs(pct_wht_base_glm,pct_wht_full_glm,
+ # robust = "HC0",
+ # cluster = "GEOID")
+# create a summ object 
+pct_wht_full_mod <- summ(pct_wht_full_glm, robust = "HC0", cluster = "GEOID")
+
+
+#pct_wht_full_mod
+## full and restricted model effect plot 
+```
+
+```{r, echo = F, fig.cap = "Difference in Difference Estimates of Percent Black Demographics in Seattle", fig.align= "center"}
+## Base linear model for percent black ---------------------------------------------------------
+pct_blk_base_glm <- glm(pct_blk ~ # outcome 
+                          I(time == 1990) + # regressor for time 1990 ref is 2000
+                          I(time == 2010) + # regressor for 2010
+                          I(time == 2015) + # regressor for 2015
+                          I(lrt_treat == 1) + # dummy for control and treat
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010 
+                          I(time == 2015 * lrt_treat) + ## DID 2015
+                          pct_blk80, # fixed effect 
+                        data = panel) 
+# Full linear model for percent black ---------------------------------------------------------
+pct_blk_full_glm <- glm(pct_blk ~ # outcome 
+                          I(time == 1990) + # Dummy for 1990
+                          I(time == 2010) + # dummy for 2010
+                          I(time == 2015) + # dummy for 2015
+                          I(lrt_treat == 1) + # treatement 
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010
+                          I(time == 2015 * lrt_treat) + # DID 2015 
+                          pct_wht80 + # fixed effect for 1980 racial composition for each race
+                          pct_blk80 + # fixed effect for blk 80 composition
+                          pct_hsp80 + # fixed effect for hispanic composition
+                          pct_as_pi80 + # fixed effect for asian pi composition
+                          vacant_hu80 + # 1980 fixed effect housing 
+                          med_gross_rent80 + # 1980 fixed effect for rent in dollars 
+                          pop_dens + # time varying population density
+                          maj_owner + # time varying homeownership
+                          total_pop,
+                          data = panel) 
+# effect plot
+pct_blk_base_mod <- summ(pct_blk_base_glm, robust = "HC0", cluster = "GEOID")
+pct_blk_full_mod <- summ(pct_blk_full_glm, robust = "HC0", cluster = "GEOID")
+```
+
+```{r, echo = F, fig.cap = "Difference in Difference Estimates of Percent Asian Demographics in Seattle"}
+
+## Base linear model for percent asian ---------------------------------------------------------
+pct_a_base_glm <- glm(pct_a ~ # outcome 
+                          I(time == 1990) + # regressor for time 1990 ref is 2000
+                          I(time == 2010) + # regressor for 2010
+                          I(time == 2015) + # regressor for 2015
+                          I(lrt_treat == 1) + # dummy for control and treat
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010 
+                          I(time == 2015 * lrt_treat) + ## DID 2015
+                           pct_as_pi80,# fixed effect 
+                        data = panel)  
+# Full linear model for percent asian ---------------------------------------------------------
+pct_a_full_glm <- glm(pct_a ~ # outcome 
+                          I(time == 1990) + # Dummy for 1990
+                          I(time == 2010) + # dummy for 2010
+                          I(time == 2015) + # dummy for 2015
+                          I(lrt_treat == 1) + # treatement 
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010
+                          I(time == 2015 * lrt_treat) + # DID 2015 
+                          pct_wht80 + # fixed effect for 1980 racial composition for each race
+                          pct_blk80 + # fixed effect for blk 80 composition
+                          pct_hsp80 + # fixed effect for hispanic composition
+                          pct_as_pi80 + # fixed effect for asian pi composition
+                          vacant_hu80 + # 1980 fixed effect housing 
+                          med_gross_rent80 + # 1980 fixed effect for rent in dollars 
+                          pop_dens + # time varying population density
+                        maj_owner + 
+                        total_pop,
+                          data = panel) 
+
+pct_as_base_mod <- summ(pct_a_base_glm, robust = "HC0", cluster = "GEOID")
+pct_as_full_mod <- summ(pct_a_full_glm, robust = "HC0", cluster = "GEOID")
+
+```
+
+```{r, fig.cap = "Difference in Difference Estimates of Percent Hispanic Demographics in Seattle", echo = F}
+
+## Base linear model for percent Hispanic ---------------------------------------------------------
+pct_hsp_base_glm <- glm(pct_hsp ~ # outcome 
+                          I(time == 1990) + # regressor for time 1990 ref is 2000
+                          I(time == 2010) + # regressor for 2010
+                          I(time == 2015) + # regressor for 2015
+                          I(lrt_treat == 1) + # dummy for control and treat
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010 
+                          I(time == 2015 * lrt_treat) + ## DID 2015
+                           pct_hsp80,# fixed effect 
+                        data = panel)  
+# Full linear model for percent hispanic ---------------------------------------------------------
+pct_hsp_full_glm <- glm(pct_hsp ~ # outcome 
+                          I(time == 1990) + # Dummy for 1990
+                          I(time == 2010) + # dummy for 2010
+                          I(time == 2015) + # dummy for 2015
+                          I(lrt_treat == 1) + # treatement 
+                          I(time == 1990 * lrt_treat) + # DID 1990
+                          I(time == 2010 * lrt_treat) + # DID 2010
+                          I(time == 2015 * lrt_treat) + # DID 2015 
+                          pct_wht80 + # fixed effect for 1980 racial composition for each race
+                          pct_blk80 + # fixed effect for blk 80 composition
+                          pct_hsp80 + # fixed effect for hispanic composition
+                          pct_as_pi80 + # fixed effect for asian pi composition
+                          vacant_hu80 + # 1980 fixed effect housing 
+                          med_gross_rent80 + # 1980 fixed effect for rent in dollars 
+                          pop_dens + # time varying population density
+                          maj_owner + 
+                          total_pop,
+                          data = panel) 
+
+pct_hsp_base_mod <- summ(pct_hsp_base_glm, robust = "HC0", cluster = "GEOID")
+pct_hsp_full_mod <- summ(pct_hsp_full_glm, robust = "HC0", cluster = "GEOID")
+```
+
+```{r, echo = F, message = F,fig.height=3,fig.width=6, fig.cap = "DID estimates of LRT effect on racial group percent"}
+jtools:: plot_coefs(pct_wht_full_mod,pct_blk_full_mod,pct_as_full_mod,pct_hsp_full_mod,
+                    coefs = c(
+                    ## DID post inauguration
+                    "2010 DID" = "I(time == 2010 * lrt_treat)TRUE",
+                    "2015 DID" = "I(time == 2015 * lrt_treat)TRUE"
+                    ),
+          ## Distribution argument ? 
+          plot.distributions = F,
+          legend.title = "Model, CI = 0.95",
+          colors = c("#A8C9D7","#EA7C4D","#247E8C","#838C24"),
+          ci_level = .95,
+          model.names = c("Model 1: % White","Model 2: % Black","Model 3: % Asian","Model 4: % Hispanic"))
+#pct_wht_full_mod
+```
+  
+# Statistical Analysis: DID for income composition
+
+```{r, include = F}
+# Q1 income full ====
+pct_q1_full_glm <- glm(Q1pct ~ # dependent variable
+                      I(time == 1990) + # Time 1990 ref is 2000
+                      I(time == 2010) + # Time 2010
+                      I(time == 2015) + # Time 2015
+                      I(lrt_treat == 1) + # Treatement dummy
+                      I(time == 1990 * lrt_treat) + # DID for pre trend 
+                      I(time == 2010 * lrt_treat) + # DID for post construction
+                      I(time == 2015 * lrt_treat) + # DID for post inauguration
+                      pop_dens + # population density over time 
+                      vacant_hu80 +
+                        med_gross_rent80 + 
+                        maj_owner +
+                        pct_wht80 + 
+                        pct_blk80 + 
+                        pct_as_pi80 + 
+                        pct_hsp80 + 
+                        total_pop,
+                      data = panel) # data 
+pct_q1_full_mod <- summ(pct_q1_full_glm, robust = "HC0", cluster = "GEOID")
+
+# Q2 income full =====
+pct_q2_full_glm <- glm(Q2pct ~ # dependent variable
+                      I(time == 1990) + # Time 1990 ref is 2000
+                      I(time == 2010) + # Time 2010
+                      I(time == 2015) + # Time 2015
+                      I(lrt_treat == 1) + # Treatement dummy
+                      I(time == 1990 * lrt_treat) + # DID for pre trend 
+                      I(time == 2010 * lrt_treat) + # DID for post construction
+                      I(time == 2015 * lrt_treat) + # DID for post inauguration
+                      pop_dens + # population density over time 
+                      med_gross_rent80 +
+                      vacant_hu80 + 
+                        total_pop + 
+                        pct_wht80 + 
+                        pct_blk80 + 
+                        pct_as_pi80 + 
+                        pct_hsp80 + 
+                      maj_owner,
+                      data = panel) # data 
+
+pct_q2_full_mod <- summ(pct_q2_full_glm, robust = "HC0", cluster = "GEOID")
+
+# Q3 full glm =====
+pct_q3_full_glm <- glm(Q3pct ~ # dependent variable
+                      I(time == 1990) + # Time 1990 ref is 2000
+                      I(time == 2010) + # Time 2010
+                      I(time == 2015) + # Time 2015
+                      I(lrt_treat == 1) + # Treatement dummy
+                      I(time == 1990 * lrt_treat) + # DID for pre trend 
+                      I(time == 2010 * lrt_treat) + # DID for post construction
+                      I(time == 2015 * lrt_treat) + # DID for post inauguration
+                      pop_dens + # population density over time 
+                      med_gross_rent80 +
+                      vacant_hu80 + 
+                      total_pop + 
+                        pct_wht80 + 
+                        pct_blk80 + 
+                        pct_as_pi80 + 
+                        pct_hsp80 + 
+                      maj_owner,
+                      data = panel) # data 
+
+pct_q3_full_mod <- summ(pct_q3_full_glm, robust = "HC0", cluster = "GEOID")
+
+# q 4 income 
+
+pct_q4_full_glm <- glm(Q4pct ~ # dependent variable
+                      I(time == 1990) + # Time 1990 ref is 2000
+                      I(time == 2010) + # Time 2010
+                      I(time == 2015) + # Time 2015
+                      I(lrt_treat == 1) + # Treatement dummy
+                      I(time == 1990 * lrt_treat) + # DID for pre trend 
+                      I(time == 2010 * lrt_treat) + # DID for post construction
+                      I(time == 2015 * lrt_treat) + # DID for post inauguration
+                      pop_dens + # population density over time 
+                      med_gross_rent80 +
+                      vacant_hu80 + 
+                        total_pop + 
+                        pct_wht80 + 
+                        pct_blk80 + 
+                        pct_as_pi80 + 
+                        pct_hsp80 + 
+                      maj_owner,
+                      data = panel) # data 
+
+pct_q4_full_mod <- summ(pct_q4_full_glm, robust = "HC0", cluster = "GEOID")
+
+# Q5 income full glm 
+pct_q5_full_glm <- glm(Q5pct ~ # dependent variable
+                      I(time == 1990) + # Time 1990 ref is 2000
+                      I(time == 2010) + # Time 2010
+                      I(time == 2015) + # Time 2015
+                      I(lrt_treat == 1) + # Treatement dummy
+                      I(time == 1990 * lrt_treat) + # DID for pre trend 
+                      I(time == 2010 * lrt_treat) + # DID for post construction
+                      I(time == 2015 * lrt_treat) + # DID for post inauguration
+                      pop_dens + # population density over time 
+                      med_gross_rent80 +
+                      vacant_hu80 + 
+                      total_pop + 
+                        pct_wht80 + 
+                        pct_blk80 + 
+                        pct_as_pi80 + 
+                        pct_hsp80 + 
+                      maj_owner ,
+                      data = panel) # data 
+pct_q5_full_mod  <- summ(pct_q5_full_glm, robust = "HC0", cluster = "GEOID")
+
+```
+
+```{r, fig.cap = "DID estimates of LRT effect on income quintile percent",fig.height=3,fig.width=6, echo =F, message=F}
+# effect plot for PCT incomes 
+plot_coefs(pct_q1_full_mod, pct_q2_full_mod,pct_q3_full_mod,pct_q4_full_mod,pct_q5_full_mod,
+           coefs = c(
+                    ## DID post inauguration
+                    "2010 DID" = "I(time == 2010 * lrt_treat)TRUE",
+                    "2015 DID" = "I(time == 2015 * lrt_treat)TRUE"
+                    ),
+           model.names = c("%Q1","%Q2","%Q3","%Q4","%Q5"),
+           colors = c("#A8C9D7","#EA7C4D","#247E8C","#838C24","#8C2484"), 
+           legend.title = "Model, CI = 95%",
+           ci_level = .95)
+```
+
+# Conclusions
+
++ 5 years after LRT, neighborhoods experience dramatic increases in white residents, and declining or stagnant non-white groups.
++ 5 years after LRT, there is shift in the income distribution tending toward the highest quintile earners.   
++ This suggests that income is an important factor in how demographics in Seattle are changing. 
++ Income patterns are consistent with my hypothesis that dramatic shifts in income could be moving the composition. 
++ But it is not clear how this change may vary by racial group. 
+
+# Limitations
+
++ The ACS and census report compositional estimates so understanding how distribution changes translate to in and out migration flows is tricky. 
++ Prediction of Black racial and economic trends can be subject to a lot of uncertainty.^[Data and full analysis provided on request. Email: tgoerz99@uw.edu]  
+  + Small counts in ACS sample. 
+  + Low levels of Black population overall in Seattle. 
++ DID modeling assumptions may not be met in this case.^[Parallel trends and endogeneity are issues, but beyond the scope of the presentation.] 
+
+# References
+\fontsize{7pt}{7.2}\selectfont
+Bartholomew, Keith, and Reid Ewing. 2011. “Hedonic Price Effects of Pedestrian- and Transit-Oriented Development.” Journal of Planning Literature 26(1):18–34. doi: 10.1177/0885412210386540.
+
+Bertrand, Marianne, Esther Duﬂo, and Sendhil Mullainathan. 2003. “HOW MUCH SHOULD WE TRUST DIFFERENCES-IN-DIFFERENCES ESTIMATES?” 32.
+
+Chapple, Karen, and Anastasia Loukaitou-Sideris. 2019. Transit-Oriented Displacement or Community Dividends?
+
+Ding, Lei, Jackelyn Hwang, and Eileen Divringi. 2016. “Gentrification and Residential Mobility in Philadelphia.” Regional Science and Urban Economics 61:38–51. doi: 10.1016/j.regsciurbeco.2016.09.004.
+
+Understanding the Effects of Smarter Growth on Communities. Cambridge, MA: The MIT Press.
+City of Seattle. 2019. Seattle 2035 Urban Growth Strategy. City of Seattle.
+
+Freeman, Lance. 2005. “Displacement or Succession?: Residential Mobility in Gentrifying Neighborhoods.” Urban Affairs Review 40(4):463–91. doi: 10.1177/1078087404273341.
+
+Hess, Chris L. 2020. “Light-Rail Investment in Seattle: Gentrification Pressures and Trends in Neighborhood Ethnoracial Composition.” Urban Affairs Review 56(1):154–87. doi: 10.1177/1078087418758959.
+
+Martin, Isaac William, and Kevin Beck. 2018. “Gentrification, Property Tax Limitation, and Displacement.” Urban Affairs Review 54(1):33–73. doi: 10.1177/1078087416666959.
