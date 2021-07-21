@@ -2,7 +2,7 @@
 title: 'Race, Class, and Transit Oriented Development'
 subtitle: "*Examining high-income demographic change after light rail transit*"
 author: "Thelonious Goerz"
-institute: "Dept. of Sociology  \n  Johns Hopkins University"
+institute: "Dept. of Sociology  \n  Johns Hopkins University  \n  Center for Studies in Demography and Ecology"
 output: 
   beamer_presentation:
     colortheme: "seahorse"
@@ -35,15 +35,18 @@ options(digits=2)
 # Motivation
 
 + How and where people move have been a core questions in urban sociology and poverty research for years.
-  + These moves have consequences for various aspects of life: wellbeing, economic status. 
++ Moves and their associated neighborhood contexts are important for wellbeing, educational attainment, and development over the life course (Bergman et. al. 2020; Chetty et. al. 2016)
++ So it is important to understand the whole picture of mobility: Both high and low income mobility. 
   
-**Therefore, it makes sense to study the most vulnerable populations, right?**
+**But, does it makes sense to study the most vulnerable populations?**
 
 # Motivation 
 
-**Well, sort of.**
+**Yes and No.**
 
 + I argue an asymmetric focus on studying the movement patterns of low-income residents in changing neighborhoods has left open theoretical and empirical gaps for researchers. 
+  + We know little about the moves of high income individuals and households. 
+  + Often elite wealthy individuals have more power and sway over government and economic processes (Gilens and Page 2014).
 
 # Background: Theory 
 
@@ -83,7 +86,6 @@ options(digits=2)
 **Conventional wisdom suggests that neighborhoods change through low-income displacement.**
 
   + But, low-income residents are often much less mobile than middle-income and higher-income residents (Freeman 2005).
-
 + However, there is evidence to suggest that middle and upper income residents are far more mobile:
   + Ding et al. (2016): Increases in high credit score individuals' mobility in gentrified neighborhoods.
   + Bartholemew and Ewing (2017): Disamenity effect in neighborhoods with urban development, homeowners moving out. 
@@ -126,70 +128,132 @@ options(digits=2)
 
 + **This study argues that middle and high income groups are the primary forces shifting neighborhood racial composition in LRT neighborhoods because of their capacity to move.**
 
-# Methods 
+# Data
 
 + Time series data for 135 census tracts (Seattle, N = 540) and 24 LRT treated tracts [1990-2015]:
   + Income (by race), demographic variables, and controls. 
   + American Community Survey, Decennial Census Long Form, Hess (2020). 
+  
+# Data: A note on working with the ACS
 
-+ Difference in difference (comparative counterfactual design)
-  + Quasi-experiment where: 
-    + We can estimate causality.
-    + Gain insights about what would have happened if (+ LRT) or (-LRT).
++ I assemble this panel dataset between 1990-2015 at 4 time points. 
+  + The 1990 and 2000 are census long form data that are geographically linked to the 2010 re-draw of census tracts. 
+    + This is accomplished using the IPUMS geographic crosswalk files.^[More info here: https://www.nhgis.org/geographic-crosswalks] ^[I am happy to discuss this in more depth too if it is of interest to the team.]
++ I create income quintiles by matching the income bins in the ACS and Census data at time t to the cutoffs for each quintile in that year.
+  + This has some issues, given there is error in the cutoffs.
+    + Thankfully in this case the error is at most $5,000.
+  + The upper tail of the distribution is unknown so we have very little idea how much error there is. 
++ Data after 2009 can be accessed easily with the `tidycensus` package in R. This has excellent support and needs an API key!^[So get one if you need.]
+
+# Methods
+
++ Difference in difference (DID) (comparative counterfactual design)
++ DID is a quasi-experimental research design borrowed from econometrics, that useses the assumption of "parallel pre-treatement trends" as an identification strategy for a causal effect.
+  + This means that we find some panel data where there is a pre and post treatment stage, and compare pre-treatment states of both treatment and control groups. 
+    + If they are the same, we can assume that the post-treatment difference^[Here is where the name comes in.] is the effect of the treatment on the outcome. 
+  + The limitations and threats to identifcation are many, especially in this case.
+  
+# Methods 
+
++ To specify the model, I use robust standard errors clustered at the tract level and formulate the model in a maximum likelihood regression framework. 
++ I specify the following model with the functional form: 
+
+$$
+\begin{aligned}
+  Y_{it} &= \alpha_i + \gamma_{t} + X_{it} +\beta{\delta_{1990}} + \beta{\delta_{2010}} + \beta{\delta_{2015}} + \epsilon_{it} \\
+  \epsilon &\sim N(\mu,\sigma^2)
+\end{aligned}
+$$
+
++ Where, Y is the percent of a racial group in a census tract at time t and in the treatment group i, alpha is a group fixed effect and gamma is a time fixed effect, and X is a matrix of control variables for the 1980 composition and others. The deltas are interactions coefficients that correspond to pre-trend (1990), a reference category (2000), and a post-construction effect (2010) and a post link opening (2015) effect.
     
-# Descriptive Analysis
+  
+# Summary Statistics
 
-```{r, echo = F, message =F, fig.align="center",warning=F, fig.cap = "Comparison of Percent of Each Racial Group Over Time in Seattle",fig.subcap="",fig.height=2,fig.width=4}
-# Racial composition descriptive graph 
-panel %>% 
-  # pivot comps into one 
-  pivot_longer(c(pct_wht,pct_blk,pct_a,pct_hsp),
-               names_to = "race", values_to = "race_pcts") %>% 
-  mutate(treat = ifelse(lrt_treat == 1,"LRT","Non-LRT")) %>%
-  # pipe to ggplot 
-  ggplot(aes(time,race_pcts,color = race)) + stat_summary(geom = "line") + 
-  # minimal 
-  theme_minimal() + 
-  # title 
-  scale_color_manual(name = "Racial Group",
-                     labels = c("% Asian","% Black",
-                                "% Hispanic", "% White"),
-                     values = c("#A8C9D7","#EA7C4D","#247E8C","#838C24")) + 
-  # labs
-  labs(title = " ",
-       subtitle = "Line is LRT opening",
-       x = "Time",
-       y = "% of Overall Composition") + 
-  facet_wrap(~treat) +
-  geom_vline(xintercept = 2010) + theme(text=element_text(size=8,  family="serif"))
+```{r,echo = F, results = "asis"}
+tbl_data <- panel %>% filter(time == 2000) %>%
+  select(pct_wht,pct_blk,pct_a,pct_hsp,Q1pct,Q2pct,Q3pct,Q4pct,Q5pct)
+
+  stargazer::stargazer(as.data.frame(tbl_data), type = "latex",
+                    title = "Pooled Cross-Sectional Pre-Treatment Summary Statistics (2000)",
+                     summary.stat = c("n","mean","sd","min","max"),
+                     covariate.labels = c("Percent White",
+                                          "Percent Black",
+                                          "Percent Asian",
+                                          "Percent Hispanic",
+                                          "Percent Q1",
+                                          "Percent Q2",
+                                          "Percent Q3",
+                                          "Percent Q4",
+                                          "Percent Q5"),
+                    header = F)
+
 ```
 
-# Descriptive Analysis 
+# Summary Statistics 
 
-```{r, echo = F, message = F, fig.align = "center", warning = F,fig.width=7, fig.height=4, fig.cap = "Comparison of Income Quintiles in Seattle Census Tracts Over Time",fig.height=2,fig.width=4}
-# income comps 
-panel %>% 
-  # pivot 
-  pivot_longer(c(Q1pct,Q2pct,Q3pct,Q4pct,Q5pct),
-               names_to = "quintiles", values_to = "quintile_values") %>% 
-  mutate(treat = ifelse(lrt_treat == 1,"LRT","Non-LRT")) %>%
-  ggplot(aes(time,quintile_values,color = quintiles)) +
-  stat_summary(geom = "line") + 
-  scale_color_manual(name = "Income Quintile",
-                     values = c("#A8C9D7","#EA7C4D","#247E8C","#838C24","#8C2484"),
-                     labels = c("%Q1",
-                                "%Q2",
-                                "%Q3",
-                                "%Q4",
-                                "%Q5")) + 
-  theme_minimal() + 
-  labs(title = " ",
-       subtitle = "Line is LRT opening",
-       x = "Time",
-       y = "% Of Total") + facet_wrap(~treat) + 
-  geom_vline(xintercept = 2010) + theme(text=element_text(size=8,  family="serif"))
+```{r, results = "asis", echo = F}
+tbl_data2 <- panel %>% filter(time == 2015) %>%
+  select(pct_wht,pct_blk,pct_a,pct_hsp,Q1pct,Q2pct,Q3pct,Q4pct,Q5pct)
+
+  stargazer::stargazer(as.data.frame(tbl_data2), type = "latex",
+                    title = "Pooled Cross-Sectional Post-Treatment Summary Statistics (2015)",
+                     summary.stat = c("n","mean","sd","min","max"),
+                     covariate.labels = c("Percent White",
+                                          "Percent Black",
+                                          "Percent Asian",
+                                          "Percent Hispanic",
+                                          "Percent Q1",
+                                          "Percent Q2",
+                                          "Percent Q3",
+                                          "Percent Q4",
+                                          "Percent Q5"),
+                    header = F)
 ```
 
+# Summary Statistics: Treatment 
+
+```{r,echo = F, results = "asis"}
+tbl_data3 <- panel %>% filter(time == 2000 & lrt_treat == 1) %>%
+  select(pct_wht,pct_blk,pct_a,pct_hsp,Q1pct,Q2pct,Q3pct,Q4pct,Q5pct)
+
+  stargazer::stargazer(as.data.frame(tbl_data3), type = "latex",
+                    title = "Treatment Group Cross-Sectional Pre-Treatment Summary Statistics (2000)",
+                     summary.stat = c("n","mean","sd","min","max"),
+                     covariate.labels = c("Percent White",
+                                          "Percent Black",
+                                          "Percent Asian",
+                                          "Percent Hispanic",
+                                          "Percent Q1",
+                                          "Percent Q2",
+                                          "Percent Q3",
+                                          "Percent Q4",
+                                          "Percent Q5"),
+                    header = F)
+
+```
+
+# Summary Statistics: Treatment 
+
+```{r,echo = F, results = "asis"}
+tbl_data4 <- panel %>% filter(time == 2015 & lrt_treat == 1) %>%
+  select(pct_wht,pct_blk,pct_a,pct_hsp,Q1pct,Q2pct,Q3pct,Q4pct,Q5pct)
+
+  stargazer::stargazer(as.data.frame(tbl_data4), type = "latex",
+                    title = "Treatment Group Cross-Sectional Post-Treatment Summary Statistics (2015)",
+                     summary.stat = c("n","mean","sd","min","max"),
+                     covariate.labels = c("Percent White",
+                                          "Percent Black",
+                                          "Percent Asian",
+                                          "Percent Hispanic",
+                                          "Percent Q1",
+                                          "Percent Q2",
+                                          "Percent Q3",
+                                          "Percent Q4",
+                                          "Percent Q5"),
+                    header = F)
+
+```
 # Statistical Analysis: DID of racial composition
 
 ```{r, echo = F, message = F, fig.align='center', fig.cap="Difference in Difference Estimates of Percent White Demographics in Seattle"}
@@ -491,23 +555,41 @@ plot_coefs(pct_q1_full_mod, pct_q2_full_mod,pct_q3_full_mod,pct_q4_full_mod,pct_
 + 5 years after LRT, there is shift in the income distribution tending toward the highest quintile earners.   
 + This suggests that income is an important factor in how demographics in Seattle are changing. 
 + Income patterns are consistent with my hypothesis that dramatic shifts in income could be moving the composition. 
-+ But it is not clear how this change may vary by racial group. 
++ Income does vary by racial group too. ## Edit
 
 # Limitations
 
 + The ACS and census report compositional estimates so understanding how distribution changes translate to in and out migration flows is tricky. 
-+ Prediction of Black racial and economic trends can be subject to a lot of uncertainty.^[Data and full analysis provided on request. Email: tgoerz99@uw.edu]  
++ Prediction of Black racial and economic trends can be subject to a lot of uncertainty.^[Data and full analysis provided on request. Email: tgoerz1@jh.edu]  
   + Small counts in ACS sample. 
   + Low levels of Black population overall in Seattle. 
-+ DID modeling assumptions may not be met in this case.^[Parallel trends and endogeneity are issues, but beyond the scope of the presentation.] 
++ DID modeling assumptions may not be met in this case.^[Parallel trends and endogeneity are issues. I am happy to discuss these though.] 
+
+# Future Directions 
+
++ Examine LRT impact on just new in-movers using the ACS data. 
++ Look at the differences in compositions between people who moved from the same county and those who are moving from out-of-county. 
++ Look at the longer-term effect of LRT with the new 2020 ACS data. 
++ Full models and analyses are on my github `theloniousgoerz` free and open to the public. 
+  + If you have questions about software or data let me know. 
 
 # References
 \fontsize{7pt}{7.2}\selectfont
+
 Bartholomew, Keith, and Reid Ewing. 2011. “Hedonic Price Effects of Pedestrian- and Transit-Oriented Development.” Journal of Planning Literature 26(1):18–34. doi: 10.1177/0885412210386540.
+
+Bergman, Peter, Raj Chetty, Stefanie DeLuca, Nathaniel Hendren, Lawrence F. Katz, and Christopher Palmer. 2019. Creating Moves to Opportunity: Experimental Evidence on Barriers to Neighborhood Choice. w26164. National Bureau of Economic Research.
 
 Bertrand, Marianne, Esther Duﬂo, and Sendhil Mullainathan. 2003. “HOW MUCH SHOULD WE TRUST DIFFERENCES-IN-DIFFERENCES ESTIMATES?” 32.
 
 Chapple, Karen, and Anastasia Loukaitou-Sideris. 2019. Transit-Oriented Displacement or Community Dividends?
+
+Chetty, Raj, Nathaniel Hendren, and Lawrence F. Katz. 2016. “The Effects of Exposure to Better
+Neighborhoods on Children: New Evidence from the Moving to Opportunity Experiment.”
+American Economic Review 106 (4): 855–902.
+
+# References
+\fontsize{7pt}{7.2}\selectfont
 
 Ding, Lei, Jackelyn Hwang, and Eileen Divringi. 2016. “Gentrification and Residential Mobility in Philadelphia.” Regional Science and Urban Economics 61:38–51. doi: 10.1016/j.regsciurbeco.2016.09.004.
 
@@ -515,6 +597,8 @@ Understanding the Effects of Smarter Growth on Communities. Cambridge, MA: The M
 City of Seattle. 2019. Seattle 2035 Urban Growth Strategy. City of Seattle.
 
 Freeman, Lance. 2005. “Displacement or Succession?: Residential Mobility in Gentrifying Neighborhoods.” Urban Affairs Review 40(4):463–91. doi: 10.1177/1078087404273341.
+
+Gilens, Martin, and Benjamin I. Page. 2014. “Testing Theories of American Politics: Elites, Interest Groups, and Average Citizens.” Perspectives on Politics 12(3):564–81. doi: 10.1017/S1537592714001595.
 
 Hess, Chris L. 2020. “Light-Rail Investment in Seattle: Gentrification Pressures and Trends in Neighborhood Ethnoracial Composition.” Urban Affairs Review 56(1):154–87. doi: 10.1177/1078087418758959.
 
