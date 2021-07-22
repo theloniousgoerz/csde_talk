@@ -1,8 +1,11 @@
 ---
 title: 'Race, Class, and Transit Oriented Development'
 subtitle: "*Examining high-income demographic change after light rail transit*"
-author: "Thelonious Goerz"
-institute: "Dept. of Sociology  \n  Johns Hopkins University  \n  Center for Studies in Demography and Ecology"
+author: "Thelonious Goerz  \n  Dept. of Sociology  \n  Johns Hopkins University"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+header-includes:
+- \usepackage{pdflscape}
+institute: "PHI Applied Research Fellowship  \n  Center for Studies in Demography and Ecology"
 output: 
   beamer_presentation:
     colortheme: "seahorse"
@@ -22,6 +25,7 @@ panel_full <- read_csv("./data/panel_data_thesis_final.csv")
 library(tidyverse)
 library(jtools)
 options(digits=2)
+options(scipen = 100)
 ```
 
 # Outline 
@@ -29,6 +33,7 @@ options(digits=2)
 + Background and prior research
 + Seattle case study
 + Methods and data
++ Research notes about working with these data
 + Descriptive and statistical results
 + Conclusion 
 
@@ -44,15 +49,15 @@ options(digits=2)
 
 **Yes and No.**
 
-+ I argue an asymmetric focus on studying the movement patterns of low-income residents in changing neighborhoods has left open theoretical and empirical gaps for researchers. 
-  + We know little about the moves of high income individuals and households. 
++ I argue that an asymmetric focus on studying the movement patterns of low-income residents in changing neighborhoods has left open theoretical and empirical gaps for researchers. 
+  + We know little about the movement of high income individuals and households. 
   + Often elite wealthy individuals have more power and sway over government and economic processes (Gilens and Page 2014).
 
 # Background: Theory 
 
 + Social scientists are interested in the effects of gentrification on urban demographic patterns.
-  + In recent years, it has been linked to major urban re-investment projects, such as Light Rail Transit.
-  + So, transit is a good proxy for gentrification, neighborhood change, and associated ideas.
+  + In recent years, it has been linked to major urban re-investment projects, such as Light Rail Transit on the west coast.
+  + So, transit development is a good proxy for gentrification, neighborhood change, and associated ideas.
   
 **Why does studying transit matter?**
 
@@ -60,8 +65,8 @@ options(digits=2)
 
 **Seattle and many other cities are increasingly turning to Light Rail Transit (LRT) as a way to manage growth, promote green travel initiatives, and reduce congestion.**
 
-  + Manage the tech boom in WA.
-  + Significant in-migration.
+  + Manage tech-related in-migration in Seattle.
+  + Transit needs of low-income residents.
   + Population growth.
   
 # The Present Study
@@ -76,7 +81,7 @@ options(digits=2)
 **As a consequence:**
 
 + There are puzzling trends going on.
-  + Hess (2020) finds dramatic increases in non-Hispanic White residents after LRT in Seattle.
+  + Hess (2020) finds dramatic increases in non-Hispanic White residents after LRT in greater Seattle area census tracts.
   + Declines in Asian and Hispanic residents after LRT.
   
 **How is this happening?**
@@ -116,7 +121,7 @@ options(digits=2)
   geom_vline(xintercept = 2010) + theme(text=element_text(size=10,  family="serif"))
 ```
 
-# The Present Study
+# Background: Income and Mobility
 
 + The demographic trends in Seattle are not consistent with patterns of socioeconomic mobility in changing neighborhoods.
   + Often low-income groups are declining.
@@ -136,9 +141,8 @@ options(digits=2)
   
 # Data: A note on working with the ACS
 
-+ I assemble this panel dataset between 1990-2015 at 4 time points. 
-  + The 1990 and 2000 are census long form data that are geographically linked to the 2010 re-draw of census tracts. 
-    + This is accomplished using the IPUMS geographic crosswalk files.^[More info here: https://www.nhgis.org/geographic-crosswalks] ^[I am happy to discuss this in more depth too if it is of interest to the team.]
++ I assemble this panel dataset between 1990-2015 at 4 time periods. 
+  + The 1990 and 2000 are census long form data that are geographically linked to the 2010 re-draw of census tracts. ^[This is accomplished using the IPUMS geographic crosswalk files.^[More info here: https://www.nhgis.org/geographic-crosswalks I am happy to discuss this in more depth too if it is of interest to the team.]
 + I create income quintiles by matching the income bins in the ACS and Census data at time t to the cutoffs for each quintile in that year.
   + This has some issues, given there is error in the cutoffs.
     + Thankfully in this case the error is at most $5,000.
@@ -148,9 +152,8 @@ options(digits=2)
 # Methods
 
 + Difference in difference (DID) (comparative counterfactual design)
-+ DID is a quasi-experimental research design borrowed from econometrics, that useses the assumption of "parallel pre-treatement trends" as an identification strategy for a causal effect.
-  + This means that we find some panel data where there is a pre and post treatment stage, and compare pre-treatment states of both treatment and control groups. 
-    + If they are the same, we can assume that the post-treatment difference^[Here is where the name comes in.] is the effect of the treatment on the outcome. 
++ DID is a quasi-experimental research design borrowed from econometrics, that given thee assumption of "parallel pre-treatement trends" as an identification strategy, can determine a causal effect.
+  + This means that we find some panel data where there is a pre and post-treatment stage, and compare pre-treatment states of both treatment and control groups. 
   + The limitations and threats to identifcation are many, especially in this case.
   
 # Methods 
@@ -165,8 +168,19 @@ $$
 \end{aligned}
 $$
 
-+ Where, Y is the percent of a racial group in a census tract at time t and in the treatment group i, alpha is a group fixed effect and gamma is a time fixed effect, and X is a matrix of control variables for the 1980 composition and others. The deltas are interactions coefficients that correspond to pre-trend (1990), a reference category (2000), and a post-construction effect (2010) and a post link opening (2015) effect.
-    
++ Where, $\ Y$ is the percent of a racial group in a census tract at time $\ t$ and in the treatment group $\ i$, alpha is a group fixed effect and gamma is a time fixed effect, and $\ X$ is a matrix of control variables for the 1980 composition and others. The deltas are interactions coefficients that correspond to pre-trend (1990), a reference category (2000), and a post-construction effect (2010) and a post link opening (2015) effect.
+
+# Methods: Income Quintile Computation Error
+
+```{r echo = F, align = "center"}
+data.frame("Quintile" = c("Lowest (Q1)","Second Lowest (Q2)","Middle (Q3)","Second Highest (Q4)","Highest (Q5)","Avg.. absolute dev"),
+       "1990" = c("0","-1,162","1,200","-205","205","595"),
+       "2000" = c("2045","1994","-2272","-6,960","6,960","4,046"),
+       "2010" = c("0","2000","-1,500","-29","29","711"),
+       "2015" = c("2,200","1,489","2,999","12,738","-12,738","6,432"),
+       check.names = F) %>% knitr:: kable(caption = "**Error of Estimated Income Qunitiles Over Time (In Dollars)**")
+```
+
   
 # Summary Statistics
 
@@ -186,7 +200,8 @@ tbl_data <- panel %>% filter(time == 2000) %>%
                                           "Percent Q3",
                                           "Percent Q4",
                                           "Percent Q5"),
-                    header = F)
+                    header = F,
+                    style = "demography")
 
 ```
 
@@ -208,7 +223,8 @@ tbl_data2 <- panel %>% filter(time == 2015) %>%
                                           "Percent Q3",
                                           "Percent Q4",
                                           "Percent Q5"),
-                    header = F)
+                    header = F,
+                    style = "demography")
 ```
 
 # Summary Statistics: Treatment 
@@ -229,7 +245,8 @@ tbl_data3 <- panel %>% filter(time == 2000 & lrt_treat == 1) %>%
                                           "Percent Q3",
                                           "Percent Q4",
                                           "Percent Q5"),
-                    header = F)
+                    header = F,
+                    style = "demography")
 
 ```
 
@@ -251,7 +268,7 @@ tbl_data4 <- panel %>% filter(time == 2015 & lrt_treat == 1) %>%
                                           "Percent Q3",
                                           "Percent Q4",
                                           "Percent Q5"),
-                    header = F)
+                    header = F, style = "demography")
 
 ```
 # Statistical Analysis: DID of racial composition
@@ -421,9 +438,35 @@ jtools:: plot_coefs(pct_wht_full_mod,pct_blk_full_mod,pct_as_full_mod,pct_hsp_fu
 #pct_wht_full_mod
 ```
   
-# Statistical Analysis: DID for income composition
+# Statistical Analysis: DID for Income Composition
+
+\fontsize{5pt}{5}\selectfont
 
 ```{r, include = F}
+library(sandwich)
+library(lmtest)
+
+
+# include conveninece chunk with model coef names
+model_coef_names = c("I(time == 1990)TRUE" = "1990",
+            "I(time == 2010)TRUE" = "2010",
+            "I(time == 2015)TRUE" = "2015",
+            "I(lrt_treat == 1)TRUE" = "LRT",
+            "I(time == 1990 * lrt_treat)TRUE" = "1990 x LRT",
+            "I(time == 2010 * lrt_treat)TRUE" =  "2010 x LRT",
+             "I(time == 2015 * lrt_treat)TRUE" = "2015 x LRT" ,
+            "pct_wht80" = "% NH White 80",
+            "pct_blk80" =  "% Black 80",
+            "pct_as_pi80" =  "% Asian/PI 80",
+            "pct_hsp80" =  "% Hispanic 80" ,
+            "vacant_hu80" = "Vacant HUs 80",
+            "med_gross_rent80" = "Med Gross Rent 80",
+              "pop_dens" = "Pop Density",
+            "total_pop" = "Total Pop",
+            "maj_owner" = "Majority Homeowner", 
+            "(Intercept)" = "Constant"
+            )
+
 # Q1 income full ====
 pct_q1_full_glm <- glm(Q1pct ~ # dependent variable
                       I(time == 1990) + # Time 1990 ref is 2000
@@ -433,7 +476,7 @@ pct_q1_full_glm <- glm(Q1pct ~ # dependent variable
                       I(time == 1990 * lrt_treat) + # DID for pre trend 
                       I(time == 2010 * lrt_treat) + # DID for post construction
                       I(time == 2015 * lrt_treat) + # DID for post inauguration
-                      pop_dens + # population density over time 
+                      pop_dens + 
                       vacant_hu80 +
                         med_gross_rent80 + 
                         maj_owner +
@@ -443,7 +486,6 @@ pct_q1_full_glm <- glm(Q1pct ~ # dependent variable
                         pct_hsp80 + 
                         total_pop,
                       data = panel) # data 
-pct_q1_full_mod <- summ(pct_q1_full_glm, robust = "HC0", cluster = "GEOID")
 
 # Q2 income full =====
 pct_q2_full_glm <- glm(Q2pct ~ # dependent variable
@@ -465,8 +507,6 @@ pct_q2_full_glm <- glm(Q2pct ~ # dependent variable
                       maj_owner,
                       data = panel) # data 
 
-pct_q2_full_mod <- summ(pct_q2_full_glm, robust = "HC0", cluster = "GEOID")
-
 # Q3 full glm =====
 pct_q3_full_glm <- glm(Q3pct ~ # dependent variable
                       I(time == 1990) + # Time 1990 ref is 2000
@@ -487,10 +527,7 @@ pct_q3_full_glm <- glm(Q3pct ~ # dependent variable
                       maj_owner,
                       data = panel) # data 
 
-pct_q3_full_mod <- summ(pct_q3_full_glm, robust = "HC0", cluster = "GEOID")
-
 # q 4 income 
-
 pct_q4_full_glm <- glm(Q4pct ~ # dependent variable
                       I(time == 1990) + # Time 1990 ref is 2000
                       I(time == 2010) + # Time 2010
@@ -509,8 +546,6 @@ pct_q4_full_glm <- glm(Q4pct ~ # dependent variable
                         pct_hsp80 + 
                       maj_owner,
                       data = panel) # data 
-
-pct_q4_full_mod <- summ(pct_q4_full_glm, robust = "HC0", cluster = "GEOID")
 
 # Q5 income full glm 
 pct_q5_full_glm <- glm(Q5pct ~ # dependent variable
@@ -531,31 +566,73 @@ pct_q5_full_glm <- glm(Q5pct ~ # dependent variable
                         pct_hsp80 + 
                       maj_owner ,
                       data = panel) # data 
-pct_q5_full_mod  <- summ(pct_q5_full_glm, robust = "HC0", cluster = "GEOID")
+
+# se
+vcov_inc = list(
+  vcovCL(pct_q1_full_glm,type = "HC0",cluster =~GEOID),
+  vcovCL(pct_q2_full_glm,type = "HC0",cluster =~GEOID),
+  vcovCL(pct_q3_full_glm,type = "HC0",cluster =~GEOID),
+  vcovCL(pct_q4_full_glm,type = "HC0",cluster =~GEOID),
+  vcovCL(pct_q5_full_glm,type = "HC0",cluster =~GEOID)
+)
+
 
 ```
 
-```{r, fig.cap = "DID estimates of LRT effect on income quintile percent",fig.height=3,fig.width=6, echo =F, message=F}
-# effect plot for PCT incomes 
-plot_coefs(pct_q1_full_mod, pct_q2_full_mod,pct_q3_full_mod,pct_q4_full_mod,pct_q5_full_mod,
-           coefs = c(
-                    ## DID post inauguration
-                    "2010 DID" = "I(time == 2010 * lrt_treat)TRUE",
-                    "2015 DID" = "I(time == 2015 * lrt_treat)TRUE"
-                    ),
-           model.names = c("%Q1","%Q2","%Q3","%Q4","%Q5"),
-           colors = c("#A8C9D7","#EA7C4D","#247E8C","#838C24","#8C2484"), 
-           legend.title = "Model, CI = 95%",
-           ci_level = .95)
+```{r, echo = F, results = "asis"}
+# Table 
+stargazer:: stargazer(pct_q1_full_glm,
+                    pct_q2_full_glm,
+                     pct_q3_full_glm,
+                     pct_q4_full_glm,
+                     pct_q5_full_glm,
+                      type = "latex",
+                      header = F,
+                      omit = c("pop_dens", 
+                     "vacant_hu80",
+                        "med_gross_rent80",
+                        "maj_owner",
+                        "pct_wht80", 
+                        "pct_blk80",
+                      "pct_as_pi80",
+                        "pct_hsp80",
+                         "total_pop",
+                     "I(time == 2015)",
+                     "I(time == 1990)",
+                      "I(time == 2010)",
+                      "I(lrt_treat == 1)",
+                       "Constant"),
+                      se = list(
+  sqrt(diag(vcovCL(pct_q1_full_glm,type = "HC0",cluster =~GEOID))),
+  sqrt(diag(vcovCL(pct_q2_full_glm,type = "HC0",cluster =~GEOID))),
+  sqrt(diag(vcovCL(pct_q3_full_glm,type = "HC0",cluster =~GEOID))),
+  sqrt(diag(vcovCL(pct_q4_full_glm,type = "HC0",cluster =~GEOID))),
+  sqrt(diag(vcovCL(pct_q5_full_glm,type = "HC0",cluster =~GEOID)))
+), digits = 3,
+title = "Difference in Difference Estimates for Percent of Households in Each Quintile", notes = "Abbreviated model, other controls omitted.",
+covariate.labels = c("1990","2000","2010","LRT Treat","1990 X LRT","2010 X LRT","2015 X LRT"),
+dep.var.labels = c("Q1","Q2","Q3","Q4","Q5"),
+style = "demography")
+
+
 ```
+
+# Income and Race
+
++ I estimate 20 models predicting the percent of households of each racial group at one of the five income quintiles (Not shown for brevity).^[But they are in the paper.]
+  + These reveal statistically significant increases in the percents of high income Asian and white households equivalent to about 9 and 7 percent respectively. 
+  + For Hispanic and Black residents their distributions remain unchanged. 
++ But, as a major reminder -- these are overall flows, not exactly causal estimates.
 
 # Conclusions
 
 + 5 years after LRT, neighborhoods experience dramatic increases in white residents, and declining or stagnant non-white groups.
-+ 5 years after LRT, there is shift in the income distribution tending toward the highest quintile earners.   
-+ This suggests that income is an important factor in how demographics in Seattle are changing. 
++ 5 years after LRT, there is shift in the income distribution tending toward the two highest quintile earners.   
++ 5 years after LRT, there are increases in the percents of white and Asian households that are at the highest quintiles while Black and Hispanic groups do not have observable change. 
++ This suggests that income is an important factor in how demographics in Seattle are changing, but non-uniform. 
 + Income patterns are consistent with my hypothesis that dramatic shifts in income could be moving the composition. 
-+ Income does vary by racial group too. ## Edit
++ The big takeaway: There is a lot we do not know about high-income earners. 
+  + We stand to learn much about the social world from their movements and motivations. 
 
 # Limitations
 

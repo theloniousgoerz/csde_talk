@@ -69,11 +69,17 @@
 \usepackage{hyperref}
 \hypersetup{
             pdftitle={Race, Class, and Transit Oriented Development},
-            pdfauthor={Thelonious Goerz},
+            pdfauthor={Thelonious Goerz Dept. of Sociology Johns Hopkins University},
             pdfborder={0 0 0},
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \newif\ifbibliography
+\usepackage{longtable,booktabs}
+\usepackage{caption}
+% These lines are needed to make table captions work with longtable:
+\makeatletter
+\def\fnum@table{\tablename~\thetable}
+\makeatother
 \usepackage{graphicx,grffile}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -93,16 +99,18 @@
 \def\fps@figure{htbp}
 \makeatother
 
+\usepackage{pdflscape}
 
 \title{Race, Class, and Transit Oriented Development}
 \providecommand{\subtitle}[1]{}
 \subtitle{\emph{Examining high-income demographic change after light rail transit}}
-\author{Thelonious Goerz}
+\author{Thelonious Goerz\\
+Dept. of Sociology\\
+Johns Hopkins University}
 \providecommand{\institute}[1]{}
-\institute{Dept. of Sociology\\
-Johns Hopkins University\\
+\institute{PHI Applied Research Fellowship\\
 Center for Studies in Demography and Ecology}
-\date{}
+\date{July 22, 2021}
 
 \begin{document}
 \frame{\titlepage}
@@ -118,6 +126,8 @@ Center for Studies in Demography and Ecology}
   Seattle case study
 \item
   Methods and data
+\item
+  Research notes about working with these data
 \item
   Descriptive and statistical results
 \item
@@ -156,14 +166,14 @@ populations?}
 \begin{itemize}
 \tightlist
 \item
-  I argue an asymmetric focus on studying the movement patterns of
+  I argue that an asymmetric focus on studying the movement patterns of
   low-income residents in changing neighborhoods has left open
   theoretical and empirical gaps for researchers.
 
   \begin{itemize}
   \tightlist
   \item
-    We know little about the moves of high income individuals and
+    We know little about the movement of high income individuals and
     households.
   \item
     Often elite wealthy individuals have more power and sway over
@@ -186,10 +196,10 @@ populations?}
   \tightlist
   \item
     In recent years, it has been linked to major urban re-investment
-    projects, such as Light Rail Transit.
+    projects, such as Light Rail Transit on the west coast.
   \item
-    So, transit is a good proxy for gentrification, neighborhood change,
-    and associated ideas.
+    So, transit development is a good proxy for gentrification,
+    neighborhood change, and associated ideas.
   \end{itemize}
 \end{itemize}
 
@@ -207,9 +217,9 @@ initiatives, and reduce congestion.}
 \begin{itemize}
 \tightlist
 \item
-  Manage the tech boom in WA.
+  Manage tech-related in-migration in Seattle.
 \item
-  Significant in-migration.
+  Transit needs of low-income residents.
 \item
   Population growth.
 \end{itemize}
@@ -251,7 +261,7 @@ initiatives, and reduce congestion.}
   \tightlist
   \item
     Hess (2020) finds dramatic increases in non-Hispanic White residents
-    after LRT in Seattle.
+    after LRT in greater Seattle area census tracts.
   \item
     Declines in Asian and Hispanic residents after LRT.
   \end{itemize}
@@ -292,8 +302,8 @@ low-income displacement.}
 
 \end{frame}
 
-\begin{frame}{The Present Study}
-\protect\hypertarget{the-present-study-1}{}
+\begin{frame}{Background: Income and Mobility}
+\protect\hypertarget{background-income-and-mobility-1}{}
 
 \begin{itemize}
 \tightlist
@@ -353,23 +363,17 @@ low-income displacement.}
 \begin{itemize}
 \tightlist
 \item
-  I assemble this panel dataset between 1990-2015 at 4 time points.
+  I assemble this panel dataset between 1990-2015 at 4 time periods.
 
   \begin{itemize}
   \tightlist
   \item
     The 1990 and 2000 are census long form data that are geographically
-    linked to the 2010 re-draw of census tracts.
-
-    \begin{itemize}
-    \tightlist
-    \item
-      This is accomplished using the IPUMS geographic crosswalk
-      files.\footnote<.->{More info here:
-        \url{https://www.nhgis.org/geographic-crosswalks}}
-      \footnote<.->{I am happy to discuss this in more depth too if it
-        is of interest to the team.}
-    \end{itemize}
+    linked to the 2010 re-draw of census tracts. \^{}{[}This is
+    accomplished using the IPUMS geographic crosswalk
+    files.\footnote<.->{More info here:
+      \url{https://www.nhgis.org/geographic-crosswalks} I am happy to
+      discuss this in more depth too if it is of interest to the team.}
   \end{itemize}
 \item
   I create income quintiles by matching the income bins in the ACS and
@@ -406,23 +410,15 @@ low-income displacement.}
   Difference in difference (DID) (comparative counterfactual design)
 \item
   DID is a quasi-experimental research design borrowed from
-  econometrics, that useses the assumption of ``parallel pre-treatement
-  trends'' as an identification strategy for a causal effect.
+  econometrics, that given thee assumption of ``parallel pre-treatement
+  trends'' as an identification strategy, can determine a causal effect.
 
   \begin{itemize}
   \tightlist
   \item
     This means that we find some panel data where there is a pre and
-    post treatment stage, and compare pre-treatment states of both
+    post-treatment stage, and compare pre-treatment states of both
     treatment and control groups.
-
-    \begin{itemize}
-    \tightlist
-    \item
-      If they are the same, we can assume that the post-treatment
-      difference\footnote<.->{Here is where the name comes in.} is the
-      effect of the treatment on the outcome.
-    \end{itemize}
   \item
     The limitations and threats to identifcation are many, especially in
     this case.
@@ -454,14 +450,39 @@ low-income displacement.}
 \begin{itemize}
 \tightlist
 \item
-  Where, Y is the percent of a racial group in a census tract at time t
-  and in the treatment group i, alpha is a group fixed effect and gamma
-  is a time fixed effect, and X is a matrix of control variables for the
-  1980 composition and others. The deltas are interactions coefficients
-  that correspond to pre-trend (1990), a reference category (2000), and
-  a post-construction effect (2010) and a post link opening (2015)
-  effect.
+  Where, \(\ Y\) is the percent of a racial group in a census tract at
+  time \(\ t\) and in the treatment group \(\ i\), alpha is a group
+  fixed effect and gamma is a time fixed effect, and \(\ X\) is a matrix
+  of control variables for the 1980 composition and others. The deltas
+  are interactions coefficients that correspond to pre-trend (1990), a
+  reference category (2000), and a post-construction effect (2010) and a
+  post link opening (2015) effect.
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Methods: Income Quintile Computation Error}
+\protect\hypertarget{methods-income-quintile-computation-error}{}
+
+\begin{longtable}[]{@{}lllll@{}}
+\caption{\textbf{Error of Estimated Income Qunitiles Over Time (In
+Dollars)}}\tabularnewline
+\toprule
+Quintile & 1990 & 2000 & 2010 & 2015\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Quintile & 1990 & 2000 & 2010 & 2015\tabularnewline
+\midrule
+\endhead
+Lowest (Q1) & 0 & 2045 & 0 & 2,200\tabularnewline
+Second Lowest (Q2) & -1,162 & 1994 & 2000 & 1,489\tabularnewline
+Middle (Q3) & 1,200 & -2272 & -1,500 & 2,999\tabularnewline
+Second Highest (Q4) & -205 & -6,960 & -29 & 12,738\tabularnewline
+Highest (Q5) & 205 & 6,960 & 29 & -12,738\tabularnewline
+Avg.. absolute dev & 595 & 4,046 & 711 & 6,432\tabularnewline
+\bottomrule
+\end{longtable}
 
 \end{frame}
 
@@ -472,8 +493,7 @@ low-income displacement.}
   \caption{Pooled Cross-Sectional Pre-Treatment Summary Statistics (2000)} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lccccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
+\\[-1.8ex]\hline \\[-1.8ex] 
 Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
 \hline \\[-1.8ex] 
 Percent White & 135 & 67.000 & 23.000 & 9.100 & 94.000 \\ 
@@ -498,8 +518,7 @@ Percent Q5 & 135 & 27.000 & 13.000 & 2.400 & 66.000 \\
   \caption{Pooled Cross-Sectional Post-Treatment Summary Statistics (2015)} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lccccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
+\\[-1.8ex]\hline \\[-1.8ex] 
 Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
 \hline \\[-1.8ex] 
 Percent White & 135 & 65.000 & 21.000 & 5.900 & 92.000 \\ 
@@ -524,8 +543,7 @@ Percent Q5 & 135 & 26.000 & 13.000 & 1.000 & 63.000 \\
   \caption{Treatment Group Cross-Sectional Pre-Treatment Summary Statistics (2000)} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lccccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
+\\[-1.8ex]\hline \\[-1.8ex] 
 Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
 \hline \\[-1.8ex] 
 Percent White & 24 & 45.000 & 26.000 & 9.100 & 78.000 \\ 
@@ -550,8 +568,7 @@ Percent Q5 & 24 & 15.000 & 8.400 & 2.400 & 37.000 \\
   \caption{Treatment Group Cross-Sectional Post-Treatment Summary Statistics (2015)} 
   \label{} 
 \begin{tabular}{@{\extracolsep{5pt}}lccccc} 
-\\[-1.8ex]\hline 
-\hline \\[-1.8ex] 
+\\[-1.8ex]\hline \\[-1.8ex] 
 Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
 \hline \\[-1.8ex] 
 Percent White & 24 & 48.000 & 21.000 & 12.000 & 75.000 \\ 
@@ -574,20 +591,74 @@ Percent Q5 & 24 & 17.000 & 7.700 & 5.500 & 36.000 \\
 
 \begin{figure}
 \centering
-\includegraphics{csde_talk_files/figure-beamer/unnamed-chunk-11-1.pdf}
+\includegraphics{csde_talk_files/figure-beamer/unnamed-chunk-12-1.pdf}
 \caption{DID estimates of LRT effect on racial group percent}
 \end{figure}
 
 \end{frame}
 
-\begin{frame}{Statistical Analysis: DID for income composition}
+\begin{frame}{Statistical Analysis: DID for Income Composition}
 \protect\hypertarget{statistical-analysis-did-for-income-composition}{}
 
-\begin{figure}
-\centering
-\includegraphics{csde_talk_files/figure-beamer/unnamed-chunk-13-1.pdf}
-\caption{DID estimates of LRT effect on income quintile percent}
-\end{figure}
+\fontsize{5pt}{5}\selectfont
+
+\begin{table}[!htbp] \centering 
+  \caption{Difference in Difference Estimates for Percent of Households in Each Quintile} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline \\[-1.8ex] 
+\\[-1.8ex] & Q1 & Q2 & Q3 & Q4 & Q5 \\ 
+\\[-1.8ex] & Model 1 & Model 2 & Model 3 & Model 4 & Model 5\\ 
+\hline \\[-1.8ex] 
+ 1990 & $-$0.380 & 0.350 & 4.300$^{***}$ & 2.100$^{***}$ & $-$6.400$^{***}$ \\ 
+  & (0.510) & (0.350) & (0.400) & (0.460) & (0.510) \\ 
+  2000 & $-$3.300$^{***}$ & $-$1.200$^{*}$ & 0.170 & 3.100$^{***}$ & 1.200$^{*}$ \\ 
+  & (0.670) & (0.480) & (0.540) & (0.530) & (0.590) \\ 
+  2010 & $-$1.400$^{*}$ & $-$2.900$^{***}$ & 3.500$^{***}$ & 1.800$^{***}$ & $-$0.950 \\ 
+  & (0.680) & (0.460) & (0.490) & (0.540) & (0.600) \\ 
+  LRT Treat & 4.900 & 0.005 & $-$2.000 & $-$2.200 & $-$0.640 \\ 
+  & (2.600) & (1.400) & (1.200) & (1.200) & (2.000) \\ 
+  1990 X LRT & 6.200$^{***}$ & $-$0.820 & $-$2.500$^{***}$ & $-$4.300$^{***}$ & 1.500 \\ 
+  & (1.700) & (0.930) & (0.720) & (0.950) & (1.200) \\ 
+  2010 X LRT & $-$2.600 & 1.300 & 0.077 & 0.460 & 0.760 \\ 
+  & (1.400) & (1.100) & (1.100) & (1.200) & (1.300) \\ 
+  2015 X LRT & $-$5.300$^{*}$ & $-$1.700 & $-$0.300 & 2.200 & 5.200$^{**}$ \\ 
+  & (2.200) & (1.600) & (1.100) & (1.200) & (1.800) \\ 
+ \textit{N} & 540 & 540 & 540 & 540 & 540 \\ 
+Log Likelihood & $-$1,886.000 & $-$1,563.000 & $-$1,595.000 & $-$1,623.000 & $-$1,881.000 \\ 
+AIC & 3,806.000 & 3,160.000 & 3,224.000 & 3,280.000 & 3,797.000 \\ 
+\hline \\[-1.8ex] 
+\multicolumn{6}{l}{$^{*}$p $<$ .05; $^{**}$p $<$ .01; $^{***}$p $<$ .001} \\ 
+\multicolumn{6}{l}{Abbreviated model, other controls omitted.} \\ 
+\end{tabular} 
+\end{table}
+
+\end{frame}
+
+\begin{frame}{Income and Race}
+\protect\hypertarget{income-and-race}{}
+
+\begin{itemize}
+\tightlist
+\item
+  I estimate 20 models predicting the percent of households of each
+  racial group at one of the five income quintiles (Not shown for
+  brevity).\footnote<.->{But they are in the paper.}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    These reveal statistically significant increases in the percents of
+    high income Asian and white households equivalent to about 9 and 7
+    percent respectively.
+  \item
+    For Hispanic and Black residents their distributions remain
+    unchanged.
+  \end{itemize}
+\item
+  But, as a major reminder -- these are overall flows, not exactly
+  causal estimates.
+\end{itemize}
 
 \end{frame}
 
@@ -601,15 +672,27 @@ Percent Q5 & 24 & 17.000 & 7.700 & 5.500 & 36.000 \\
   white residents, and declining or stagnant non-white groups.
 \item
   5 years after LRT, there is shift in the income distribution tending
-  toward the highest quintile earners.\\
+  toward the two highest quintile earners.\\
+\item
+  5 years after LRT, there are increases in the percents of white and
+  Asian households that are at the highest quintiles while Black and
+  Hispanic groups do not have observable change.
 \item
   This suggests that income is an important factor in how demographics
-  in Seattle are changing.
+  in Seattle are changing, but non-uniform.
 \item
   Income patterns are consistent with my hypothesis that dramatic shifts
   in income could be moving the composition.
 \item
-  Income does vary by racial group too. \#\# Edit
+  The big takeaway: There is a lot we do not know about high-income
+  earners.
+
+  \begin{itemize}
+  \tightlist
+  \item
+    We stand to learn much about the social world from their movements
+    and motivations.
+  \end{itemize}
 \end{itemize}
 
 \end{frame}
